@@ -1,0 +1,126 @@
+﻿<Page
+    x:Class="ClientApp.MainPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:ClientApp"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+
+    <RelativePanel HorizontalAlignment="Stretch">
+
+        <StackPanel x:Name="communicationSelection" Orientation="Horizontal" RelativePanel.AlignTopWithPanel="True" RelativePanel.AlignLeftWithPanel="True" Margin="12">
+
+            <RadioButton GroupName="communication" Checked="Rest_Checked" IsChecked="True">
+                REST/JSON
+            </RadioButton>
+
+            <RadioButton GroupName="communication" Checked="Soap_Checked">
+                SOAP/XML
+            </RadioButton>
+
+        </StackPanel>
+
+        <StackPanel x:Name="urlInput" Orientation="Horizontal" RelativePanel.Below="communicationSelection" Visibility="{Binding RestVisibility}" Margin="12">
+
+            <TextBlock VerticalAlignment="Center" Margin="0 5 5 5">Base URL:</TextBlock>
+            <TextBox Text="{Binding URL, Mode=TwoWay}"></TextBox>
+
+            <TextBlock VerticalAlignment="Center" Margin="20 5 5 5">Preset:</TextBlock>
+            <ComboBox ItemsSource="{Binding URLPresets}" SelectedItem="{Binding SelectedURLPreset, Mode=TwoWay}" DisplayMemberPath="Name" />
+
+        </StackPanel>
+
+        <StackPanel x:Name="methodSelection" Orientation="Horizontal" RelativePanel.Below="urlInput" Margin="12">
+
+            <RadioButton GroupName="method" Checked="Create_Checked" IsChecked="True" Content="{Binding Create, FallbackValue='Create'}" />
+
+            <RadioButton GroupName="method" Checked="Read_Checked" Content="{Binding Read, FallbackValue='Read'}" />
+
+            <RadioButton GroupName="method" Checked="Update_Checked" Content="{Binding Update, FallbackValue='Update'}" />
+
+            <RadioButton GroupName="method" Checked="Delete_Checked" Content="{Binding Delete, FallbackValue='Delete'}" />
+
+        </StackPanel>
+
+        <StackPanel x:Name="requestData" Orientation="Horizontal" RelativePanel.Below="methodSelection" Margin="12">
+
+            <TextBlock Visibility="{Binding RequestIdVisible}" VerticalAlignment="Center" Margin="0 5 5 5">Id:</TextBlock>
+            <TextBox Text="{Binding RequestId, Mode=TwoWay}" Visibility="{Binding RequestIdVisible}" Margin="0 0 25 0" />
+
+            <TextBlock Visibility="{Binding RequestTextVisible}" VerticalAlignment="Center" Margin="0 5 5 5">Text:</TextBlock>
+            <TextBox Text="{Binding RequestText, Mode=TwoWay}" Visibility="{Binding RequestTextVisible}" />
+
+            <CheckBox IsChecked="{Binding CreateIfNotExisting, Mode=TwoWay}" Visibility="{Binding CreateIfNotExistingVisible}" Margin="70 0 0 0">Create if not existing</CheckBox>
+
+            <CheckBox IsChecked="{Binding ErrorIfNotExisting, Mode=TwoWay}" Visibility="{Binding ErrorIfNotExistingVisible}" Margin="70 0 0 0">Error if not existing</CheckBox>
+
+        </StackPanel>
+
+        <Button x:Name="makeRequest" RelativePanel.Below="requestData" Command="{Binding MakeRequest}" Margin="12">Make Request</Button>
+
+        <StackPanel x:Name="relativeUrl" RelativePanel.Below="makeRequest" Visibility="{Binding RestVisibility}" Orientation="Horizontal" Margin="12">
+            <TextBlock VerticalAlignment="Center" Margin="0 5 5 5">Relative URL:</TextBlock>
+            <TextBlock Text="{Binding RelativeURL}" VerticalAlignment="Center" />
+        </StackPanel>
+
+        <RelativePanel x:Name="requestText" RelativePanel.AlignLeftWithPanel="true" RelativePanel.AlignRightWithPanel="True" RelativePanel.Below="relativeUrl" Visibility="{Binding RestVisibility}" Margin="12">
+
+            <TextBlock x:Name="requestLabel" RelativePanel.AlignTopWithPanel="True" FontWeight="Bold" Margin="0 5 5 5">Request</TextBlock>
+
+            <Border RelativePanel.Below="requestLabel" RelativePanel.AlignLeftWithPanel="True" RelativePanel.AlignRightWithPanel="True" BorderThickness="1" BorderBrush="Black" Margin="0 3 0 0">
+                <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
+                    <TextBlock  Text="{Binding Request}" Margin="7" />
+                </ScrollViewer>
+            </Border>
+
+        </RelativePanel>
+
+        <RelativePanel x:Name="responseRest" RelativePanel.AlignLeftWithPanel="true" RelativePanel.AlignRightWithPanel="True" RelativePanel.Below="requestText" Visibility="{Binding RestVisibility}" Margin="12">
+
+            <TextBlock x:Name="responseLabel" RelativePanel.AlignTopWithPanel="True" FontWeight="Bold">Response</TextBlock>
+
+            <StackPanel x:Name="responseData" Orientation="Horizontal" RelativePanel.Below="responseLabel" Margin="0 5 5 5">
+
+                <TextBlock VerticalAlignment="Center" Margin="0 5 5 5">HTTP Status:</TextBlock>
+                <TextBlock Text="{Binding HTTPStatus}" VerticalAlignment="Center" Margin="0 0 25 0" />
+
+                <TextBlock VerticalAlignment="Center" Margin="0 5 5 5">Id:</TextBlock>
+                <TextBlock Text="{Binding ResponseId}" VerticalAlignment="Center" Margin="0 0 25 0" />
+
+                <TextBlock VerticalAlignment="Center" Margin="0 5 5 5">Text:</TextBlock>
+                <TextBlock Text="{Binding ResponseText}" VerticalAlignment="Center" />
+
+            </StackPanel>
+
+            <Border RelativePanel.Below="responseData" RelativePanel.AlignLeftWithPanel="True" RelativePanel.AlignRightWithPanel="True" BorderThickness="1" BorderBrush="Black" Margin="0 3 0 0">
+                <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
+                    <TextBlock Text="{Binding Response}" Margin="7" />
+                </ScrollViewer>
+            </Border>
+            
+        </RelativePanel>
+
+        <RelativePanel x:Name="responseSoap" RelativePanel.AlignLeftWithPanel="true" RelativePanel.AlignRightWithPanel="True" RelativePanel.Below="responseRest" Visibility="{Binding SoapVisibility}" Margin="12">
+
+            <TextBlock x:Name="responseLabelSoap" RelativePanel.AlignTopWithPanel="True" FontWeight="Bold">Response</TextBlock>
+
+            <StackPanel x:Name="responseDataSoap" Orientation="Horizontal" RelativePanel.Below="responseLabelSoap" Margin="0 5 5 5">
+
+                <TextBlock VerticalAlignment="Center" Margin="0 5 5 5">Status:</TextBlock>
+                <TextBlock Text="{Binding SoapStatus}" VerticalAlignment="Center" Margin="0 0 25 0" />
+
+                <TextBlock VerticalAlignment="Center" Margin="0 5 5 5">Id:</TextBlock>
+                <TextBlock Text="{Binding ResponseId}" VerticalAlignment="Center" Margin="0 0 25 0" />
+
+                <TextBlock VerticalAlignment="Center" Margin="0 5 5 5">Text:</TextBlock>
+                <TextBlock Text="{Binding ResponseText}" VerticalAlignment="Center" />
+
+            </StackPanel>
+
+        </RelativePanel>
+
+    </RelativePanel>
+
+</Page>
